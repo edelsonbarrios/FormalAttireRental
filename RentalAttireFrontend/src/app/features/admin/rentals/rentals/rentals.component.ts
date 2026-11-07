@@ -50,6 +50,9 @@ export class RentalsComponent implements OnInit {
   statusOptions = STATUS_OPTIONS;
   private searchDebounce: ReturnType<typeof setTimeout> | null = null;
 
+  // Guards the "retry once with cleared filters" recovery so it can never loop
+  private isRecovering = false;
+
   // pagination
   currentPage = 1;
   itemsPerPage = 10;
@@ -98,8 +101,21 @@ export class RentalsComponent implements OnInit {
       this.rentals = [];
       this.totalCount = 0;
       this.totalPages = 1;
+      this.totalRevenue = 0;
+      this.statusCounts = {};
+      this.overdueCount = 0;
+      this.dueSoonCount = 0;
+
       this.showFeedback('error', 'Failed to Load', result.errorMessage ?? 'Failed to load rentals.');
-      this.clearFilters();
+
+      // If active filters may have caused the failure, retry ONCE with them
+      // cleared. The guard stops this from calling itself forever.
+      if (this.hasActiveFilters && !this.isRecovering) {
+        this.isRecovering = true;
+        this.resetFilterFields();
+        await this.loadRentals();
+        this.isRecovering = false;
+      }
       return;
     }
 
@@ -141,12 +157,17 @@ export class RentalsComponent implements OnInit {
     return !!this.searchQuery || !!this.statusFilter || !!this.startingDate || !!this.endingDate;
   }
 
-  clearFilters(): void {
+  // Resets the filter inputs only — does not reload
+  private resetFilterFields(): void {
     this.searchQuery = '';
     this.statusFilter = '';
     this.startingDate = '';
     this.endingDate = '';
     this.currentPage = 1;
+  }
+
+  clearFilters(): void {
+    this.resetFilterFields();
     this.loadRentals();
   }
 
