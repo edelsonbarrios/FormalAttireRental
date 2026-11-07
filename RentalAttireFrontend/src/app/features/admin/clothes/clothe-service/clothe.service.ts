@@ -60,7 +60,6 @@ export class ClotheService {
 
       return result;
     }catch(err : any) {
-      console.log(`ERROR LOG CLOTHE CREATION: ${err.error}`);
       return Result.failure(err.error);
     }
   }
@@ -75,7 +74,6 @@ export class ClotheService {
 
       return result;
     }catch(err : any) {
-      console.log(`Error Message ${JSON.stringify(extractErrorMessage(err.error))}`);
       return Result.failure(extractErrorMessage(err.error));
     }
   }

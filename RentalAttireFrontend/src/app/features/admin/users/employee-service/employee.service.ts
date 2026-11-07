@@ -31,7 +31,6 @@ export class EmployeeService {
       return result;
     } catch (err: any) {
       const message = err.error;
-      console.log(message);
       return Result.failure(message);
     }
   }
@@ -50,7 +49,6 @@ export class EmployeeService {
       return result;
     } catch (error: any) {
       const message = error.error;
-      console.log(message);
       return Result.failure(message);
     }
   }

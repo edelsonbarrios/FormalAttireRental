@@ -257,7 +257,6 @@ export class DisposablesComponent implements OnInit {
       .getCurrentUserViewModel()
       .then((res) => {
         if (!res.isSuccess)
-          console.log(`${res.errorMessage} ?? Current user cannot be found.`);
         this.currentUser = res.data ?? undefined;
       })
       .catch((err) => {

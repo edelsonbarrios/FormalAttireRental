@@ -67,7 +67,6 @@ export class AddUserComponent implements OnInit {
         }
       })
       .catch((err) => {
-        console.log(err.error);
       });
   }
 
@@ -77,10 +76,8 @@ export class AddUserComponent implements OnInit {
       .then((res) => {
         if (!res.isSuccess) return;
         this.currentUser = res.data;
-        console.log(`Current User Fetched: ${JSON.stringify(this.currentUser)}`);
       })
       .catch((err) => {
-        console.log(`Getting current user error: ${err.error}`);
       });
   }
 

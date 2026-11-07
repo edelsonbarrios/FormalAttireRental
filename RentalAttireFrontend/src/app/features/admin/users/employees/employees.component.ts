@@ -123,7 +123,6 @@ export class EmployeesComponent implements OnInit {
   }
 
   onEmployeeSubmitted(employee: EmployeeDTO): void {
-    console.log('onEmployeeSubmitted fired', employee);
     const index = this.employeeDtos.findIndex(e => e.id === employee.id);
     if(index !== -1) this.employeeDtos[index] == employee;
 

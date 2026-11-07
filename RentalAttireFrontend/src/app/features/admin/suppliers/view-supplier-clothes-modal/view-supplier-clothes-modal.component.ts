@@ -102,7 +102,6 @@ export class ViewSupplierClothesModalComponent implements OnInit {
         this.clothes = [];
         this.totalCount = 0;
         this.totalPages = 0;
-        console.log(`ERROR MESSAGE: ${res.errorMessage}`);
         return;
       }
 

@@ -233,7 +233,6 @@ export class EditClotheComponent implements OnInit {
     .then(res => {
       if(!res.isSuccess){
         this.toastrService.error(res.errorMessage ?? 'Failed to update the record.');
-        console.log(`RESULT ERROR: ${res.errorMessage}`);
       }else {
         this.toastrService.success(res.successMessage ?? 'Clothe updated successfully.');
       }

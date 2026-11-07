@@ -87,7 +87,6 @@ export class BrowseComponent implements OnInit {
         this.toastr.error(res.errorMessage ?? 'Failed to load categories.');
       this.categories = res.data ?? [];
     }).catch(err => {
-      console.log(`${err.error}`);
     });
   }
 

@@ -36,12 +36,8 @@ export class AuthService {
   private isLoggingOut = false;
 
   logout() {
-    console.log("LOGOUT CLICKED!");
-
     this.isLoggingOut = true;
     this.removeTokens();
-
-    console.log(`ACCESS TOKEN AFTER LOGOUT: ${this.getAccessToken()}`);
 
     this.router.navigateByUrl('/log-in').then(() => {
       this.isLoggingOut = false;
@@ -102,7 +98,6 @@ export class AuthService {
       localStorage.setItem(USER_ID, JSON.stringify(response.data?.id));
       return response;
     } catch (err: any) {
-      console.log('Error body:', err?.error);
       const message = err?.error;
       return Result.failure(message);
     }
@@ -131,7 +126,6 @@ export class AuthService {
       return result;
     } catch (err: any) {
       const message = err.error;
-      console.log(message);
       return Result.failure(message);
     }
   }

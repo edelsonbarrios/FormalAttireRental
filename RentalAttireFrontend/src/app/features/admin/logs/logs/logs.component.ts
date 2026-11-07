@@ -107,7 +107,6 @@ export class LogsComponent implements OnInit {
       )
       .then((res) => {
         if (!res.isSuccess)
-          console.log(`Backend response error: ${res.errorMessage}`);
         this.logs = res.data?.logs ?? [];
         this.totalCount = res.data?.totalCount ?? 0;
         this.loginCount = res.data?.loginCount ?? 0;
@@ -118,7 +117,6 @@ export class LogsComponent implements OnInit {
         this.totalPages = res.data?.totalPages ?? 0;
       })
       .catch((err) => {
-        console.log(`Logs Error: ${err.error}`);
       });
   }
 
@@ -184,7 +182,6 @@ export class LogsComponent implements OnInit {
 
     if (this.totalPages > 1) pages.push(this.totalPages);
 
-    console.log(`Last Page: ${this.totalPages}`); //
     return pages;
   } // TODO — same pattern as EmployeesComponent
 

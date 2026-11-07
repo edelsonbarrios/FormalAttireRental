@@ -174,6 +174,8 @@ export class ProfileCompletionComponent implements OnInit {
       }
 
       this.router.navigateByUrl('/customer/customer-dashboard');
+
+      console.log(`Current Payload: ${JSON.stringify(payload)}`);
     }).catch(err => {
       this.toastr.error(err.error);
     }).finally(() => {

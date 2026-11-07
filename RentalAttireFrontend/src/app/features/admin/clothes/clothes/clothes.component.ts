@@ -126,7 +126,6 @@ export class ClothesComponent implements OnInit {
         this.toastr.error(res.errorMessage);
       this.categories = res.data ?? [];
     }).catch(err => {
-      console.log(`${err.error}`);
     }).finally(() => {
       this.isLoading = false;
     })
@@ -255,7 +254,6 @@ export class ClothesComponent implements OnInit {
 
   onAddToRental(c: ClotheDTO): void {
     // TODO: emit to parent or navigate to rental creation with this item
-    console.log('Add to rental:', c.clotheCode);
   }
 
   // ============================================================

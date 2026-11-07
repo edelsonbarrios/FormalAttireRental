@@ -90,7 +90,6 @@ export class CategoryComponent implements OnInit {
       this.totalCount = res.data?.totalCount ?? 1;
       this.totalPages = res.data?.totalPages ?? 1;
     }).catch(err => {
-      console.log(`${err.error}`);
     }).finally(() => {
       this.isLoading = false;
     });
@@ -220,8 +219,6 @@ export class CategoryComponent implements OnInit {
       performedBy : this.currentUser?.fullName ?? '',
       performedById : this.currentUser?.id ?? 0
     };
-
-    console.log(`Archive Category Payload: ${JSON.stringify(payload)}`);
 
     this.categoryService.archiveCategoryByIdAsync(payload)
     .then(res => {

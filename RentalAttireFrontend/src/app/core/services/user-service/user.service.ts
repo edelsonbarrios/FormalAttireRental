@@ -29,7 +29,6 @@ export class UserService {
       );
       return result;
     } catch (err: any) {
-      console.log(`${err.error}`);
       const message = err.error;
       return Result.failure(message);
     }
@@ -38,7 +37,6 @@ export class UserService {
   async getCurrentUserViewModel(): Promise<Result<UserViewModel>> {
     try {
       const userId = this.authService.getCurrentUser();
-      console.log(`USER ID NG ADMIN: ${userId}`);
 
       if (!userId) return Result.failure('User does not exist.');
 
@@ -50,7 +48,6 @@ export class UserService {
 
       return result;
     } catch (err: any) {
-      console.log(err.error);
       return Result.failure(err.error);
     }
   }

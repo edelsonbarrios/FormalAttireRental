@@ -207,7 +207,7 @@ export class MyRentalsComponent implements OnInit {
   viewDetails(rental: RentalDTO): void {
     this.rentalToView = rental;
     this.openViewRental = true;
-    console.log('View details for:', rental.rentalCode);
+    
   }
 
   closeViewRentalModal() {

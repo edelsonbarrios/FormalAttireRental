@@ -95,7 +95,6 @@ export class EditEmployeeComponent implements OnInit {
         this.currentUser = res.data;
       })
       .catch((err) => {
-        console.log(`Getting current user error: ${err.error}`);
       });
   }
 
@@ -183,13 +182,10 @@ export class EditEmployeeComponent implements OnInit {
           this.updateErrorMessage = res.errorMessage;
           return;
         } else {
-          console.log(res.successMessage);
-          console.log(`Employee Payload After: ${employeePayload}`);
           this.updated.emit(this.form);
         }
       })
       .catch((err) => {
-        console.log(`Error: ${err}`);
       });
   }
 }
