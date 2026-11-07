@@ -12,8 +12,8 @@ using RentalAttireBackend.Infrastructure.Persistence.DataContext;
 namespace RentalAttireBackend.Migrations
 {
     [DbContext(typeof(FormalAttireContext))]
-    [Migration("20260907124138_supplier phone number & email nullable")]
-    partial class supplierphonenumberemailnullable
+    [Migration("20261107022311_fixed employees initial data query order")]
+    partial class fixedemployeesinitialdataqueryorder
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

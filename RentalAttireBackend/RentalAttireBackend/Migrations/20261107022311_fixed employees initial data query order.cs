@@ -5,7 +5,7 @@
 namespace RentalAttireBackend.Migrations
 {
     /// <inheritdoc />
-    public partial class supplierphonenumberemailnullable : Migration
+    public partial class fixedemployeesinitialdataqueryorder : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
