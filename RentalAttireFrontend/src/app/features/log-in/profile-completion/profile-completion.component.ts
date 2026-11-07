@@ -171,6 +171,7 @@ export class ProfileCompletionComponent implements OnInit {
     ).then(res => {
       if(!res.isSuccess) {
         this.toastr.error(res.errorMessage ?? "Profile could not be completed. Please try again");
+        return;
       }
 
       this.router.navigateByUrl('/customer/customer-dashboard');

@@ -103,8 +103,10 @@ export class RegistrationComponent implements OnInit{
 
     this.authService.customerRegistrationAsync(this.form)
     .then(res => {
-      if(!res.isSuccess)
+      if(!res.isSuccess){
         this.toastrService.error(res.errorMessage ?? 'Transaction failed.');
+        return;
+      }
       this.toastrService.success('Account created successfully.');
     }).catch(err => {
       this.toastrService.error(err.error);
