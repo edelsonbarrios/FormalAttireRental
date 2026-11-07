@@ -43,11 +43,6 @@ namespace RentalAttireBackend.Application.Authentication.Commands.Login
                 if (user is null)
                     return Result<AuthenticationResult>.Failure("Invalid email or password. Please try again.");
 
-                if(user.Email.Equals("admin"))
-                {
-                    user.HashedPassword = _passwordHasher.HashPassword(user.HashedPassword);
-                }
-
                 var passwordValidation = _passwordHasher.VerifyPassword(command.Password, user.HashedPassword);
 
                 if (!passwordValidation)
