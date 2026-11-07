@@ -104,31 +104,6 @@
           <span class="nav-label" *ngIf="!isCollapsed">Supplier</span>
         </a>
 
-        <!-- Purchase Order -->
-        <a class="nav-item" routerLink="/admin/purchase-orders" routerLinkActive="active"
-           [title]="isCollapsed ? 'Purchase Order' : ''">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16V8z"/>
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-              <line x1="12" y1="22.08" x2="12" y2="12"/>
-            </svg>
-          </span>
-          <span class="nav-label" *ngIf="!isCollapsed">Purchase Order</span>
-        </a>
-
-        <!-- Receiving Order -->
-        <a class="nav-item" routerLink="/admin/receiving-orders" routerLinkActive="active"
-           [title]="isCollapsed ? 'Receiving Order' : ''">
-          <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
-              <path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/>
-            </svg>
-          </span>
-          <span class="nav-label" *ngIf="!isCollapsed">Receiving Order</span>
-        </a>
-
         <a class="nav-item" routerLink="/admin/customer" routerLinkActive="active"
            [title]="isCollapsed ? 'Customers' : ''">
           <span class="nav-icon">

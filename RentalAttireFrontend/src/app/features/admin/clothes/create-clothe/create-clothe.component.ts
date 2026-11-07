@@ -250,8 +250,10 @@ export class CreateClotheComponent implements OnInit {
 
     this.clotheService.createClotheAsync(formData)
     .then(res => {
-      if(!res.isSuccess) 
+      if(!res.isSuccess) {
         this.toastrService.error(res.errorMessage ?? "Failed to create record.");
+        return;
+      }
       this.submitted.emit();
       this.close();
     }).catch(err => {
