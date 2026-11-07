@@ -9,12 +9,13 @@ import { ArchiveCategoryCommand } from '../../../../data/models/DTOs/Category/ar
 import { CreateCategoryCommand } from '../../../../data/models/DTOs/Category/create-category';
 import { UpdateCategoryCommand } from '../../../../data/models/DTOs/Category/update-category';
 import { reportUnhandledError } from 'rxjs/internal/util/reportUnhandledError';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoryService {
-  private categoryUrl = `${BaseApiUrl}/Category`;
+  private categoryUrl = `${environment.apiUrl}/Category`;
 
   constructor(private httpClient: HttpClient) {}
 

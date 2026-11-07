@@ -7,12 +7,13 @@ import { firstValueFrom } from 'rxjs';
 import { PagedResult } from '../../../../data/models/Results/pagedResult';
 import { Customer } from '../../../../data/models/DTOs/Customer/customer';
 import { ArchiveCustomerByIdCommand } from '../../../../data/models/DTOs/Customer/archive-customer';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerService {
-  private customerUrl = `${BaseApiUrl}/Customer`;
+  private customerUrl = `${environment.apiUrl}/Customer`;
 
   constructor(
     private httpClient : HttpClient

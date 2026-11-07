@@ -6,12 +6,13 @@ import { firstValueFrom } from 'rxjs';
 import { Customer } from '../../../data/models/DTOs/Customer/customer';
 import { BaseLoginProvider } from '@abacritt/angularx-social-login';
 import { extractErrorMessage } from '../../../data/utils/error-response-util';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CustomerProfileService {
-  private baseUrl = `${BaseApiUrl}/Customer`;
+  private baseUrl = `${environment.apiUrl}/Customer`;
   constructor(private httpClient: HttpClient) {}
 
   async getCustomerProfileAsync(): Promise<Result<Customer>> {

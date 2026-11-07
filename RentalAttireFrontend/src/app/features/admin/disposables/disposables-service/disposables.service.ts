@@ -7,12 +7,13 @@ import { ArchivedEntity } from '../../../../data/models/DTOs/Disposables/archive
 import { firstValueFrom } from 'rxjs';
 import { ViewRecordResponse } from '../DTOs/view-record-response';
 import { RestoreRecordCommand } from '../DTOs/restore-record-command';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DisposablesService {
-  private disposablesUrl = `${BaseApiUrl}/Disposables`;
+  private disposablesUrl = `${environment.apiUrl}/Disposables`;
   constructor(private httpClient: HttpClient) {}
 
   async getAllArchivedRecordsAsync(

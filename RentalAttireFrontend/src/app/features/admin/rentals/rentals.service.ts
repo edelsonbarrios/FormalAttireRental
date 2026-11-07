@@ -6,12 +6,13 @@ import { Result } from '../../../data/models/Results/result';
 import { RentalPageResponse } from '../../../data/models/DTOs/Rentals/rental-page-response';
 import { firstValueFrom } from 'rxjs';
 import { extractErrorMessage } from '../../../data/utils/error-response-util';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RentalsService {
-  private baseUrl = `${BaseApiUrl}/Rental`;
+  private baseUrl = `${environment.apiUrl}/Rental`;
 
   constructor(private httpClient: HttpClient) {}
 

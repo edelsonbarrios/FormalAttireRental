@@ -8,12 +8,13 @@ import { EmployeeDTO } from '../../../../data/models/DTOs/Employees/employee-dto
 import { CreateEmployeeCommand } from '../../../../data/models/DTOs/Employees/create-employee';
 import { UpdateEmployeeCommand } from '../../../../data/models/DTOs/Employees/update-employee';
 import { ArchiveEmployeeCommand } from '../../../../data/models/DTOs/Employees/archive-employee';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeService {
-  private employeeUrl = `${BaseApiUrl}/Employee`;
+  private employeeUrl = `${environment.apiUrl}/Employee`;
 
   constructor(private httpClient: HttpClient) {}
 

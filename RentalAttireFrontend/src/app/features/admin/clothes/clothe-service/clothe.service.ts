@@ -9,12 +9,13 @@ import { CreateClotheCommand } from '../create-clothe/create-clothe.component';
 import { UpdateClotheCommand } from '../edit-clothe/edit-clothe.component';
 import { ArchiveClotheCommand } from '../../../../data/models/DTOs/Clothes/archive-clothe';
 import { extractErrorMessage } from '../../../../data/utils/error-response-util';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClotheService {
-  private clotheUrl = `${BaseApiUrl}/Clothe`
+  private clotheUrl = `${environment.apiUrl}/Clothe`
 
   constructor(
     private httpClient : HttpClient

@@ -11,12 +11,13 @@ import { UpdateSupplierCommand } from '../dtos/update-supplier-command';
 import { ClotheDTO } from '../../../../data/models/DTOs/Clothes/clothes';
 import { AssignSupplierClothesModalResponse } from '../dtos/assign-supplier-clothes-reponse';
 import { animateChild } from '@angular/animations';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupplierService {
-  private baseUrl = `${BaseApiUrl}/Supplier`;
+  private baseUrl = `${environment.apiUrl}/Supplier`;
 
   constructor(
     private httpClient : HttpClient

@@ -18,6 +18,7 @@ import { JwtPayload } from '../../../data/models/DTOs/Authentication/jwt-payload
 import { ProfileCompletionComponent } from '../../../features/log-in/profile-completion/profile-completion.component';
 import { ProfileCompletionRequest } from '../../../data/models/DTOs/Authentication/profile-completion';
 import { extractErrorMessage } from '../../../data/utils/error-response-util';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -28,8 +29,8 @@ export class AuthService {
     private router: Router,
   ) {}
 
-  private baseUrl = `${BaseApiUrl}/Authentication`;
-  private customerUrl = `${BaseApiUrl}/Customer`
+  private baseUrl = `${environment.apiUrl}/Authentication`;
+  private customerUrl = `${environment.apiUrl}/Customer`
   private accessTokenKey = `${AccessTokenKey}`;
   private refreshTokenKey = `${RefreshTokenKey}`;
   private isLoggingOut = false;

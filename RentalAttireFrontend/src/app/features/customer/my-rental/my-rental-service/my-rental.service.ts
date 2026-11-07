@@ -7,12 +7,13 @@ import { Result } from '../../../../data/models/Results/result';
 import { extractErrorMessage } from '../../../../data/utils/error-response-util';
 import { filter, firstValueFrom } from 'rxjs';
 import { BaseRouteReuseStrategy } from '@angular/router';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MyRentalService {
-  private baseUrl = `${BaseApiUrl}/Rental`;
+  private baseUrl = `${environment.apiUrl}/Rental`;
   constructor(
     private httpClient: HttpClient
   ) { }

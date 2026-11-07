@@ -6,12 +6,13 @@ import { PagedResult } from '../../../../data/models/Results/pagedResult';
 import { AuditLog } from '../../../../data/models/DTOs/AuditLogs/audit-log';
 import { audit, firstValueFrom } from 'rxjs';
 import { LogsReponse } from '../../../../data/models/DTOs/AuditLogs/logs-reponse';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuditLogService {
-  private auditUrl = `${BaseApiUrl}/Audit`;
+  private auditUrl = `${environment.apiUrl}/Audit`;
 
   constructor(private httpClient: HttpClient) {}
 

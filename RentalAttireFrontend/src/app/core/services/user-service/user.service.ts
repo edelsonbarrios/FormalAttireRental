@@ -7,12 +7,13 @@ import { BaseApiUrl } from '../../../../environments/base-api-url';
 import { BaseRouteReuseStrategy } from '@angular/router';
 import { AuthService } from '../auth-service/auth.service';
 import { CreateCategoryCommand } from '../../../data/models/DTOs/Category/create-category';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private baseUrl = `${BaseApiUrl}/User`;
+  private baseUrl = `${environment.apiUrl}/User`;
 
   constructor(
     private httpClient: HttpClient,
