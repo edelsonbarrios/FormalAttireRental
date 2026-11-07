@@ -37,21 +37,7 @@ export class RegistrationComponent implements OnInit{
   ) {}
 
   ngOnInit(): void {
-    this.form.email = 'obloks213';
-    this.form.password = 'obloks213';
-    this.form.confirmPassword = 'obloks213';
-    this.form.person.lastName = 'Santos';
-    this.form.person.firstName = 'Maria';
-    this.form.person.middleName = 'Cruz';
-    this.form.person.age = 23;
-    this.form.person.gender = 'Male';
-    this.form.person.maritalStatus = 'Single';
-    this.form.person.street = 'Rizal Street 213';
-    this.form.person.barangay = 'Barangay 2';
-    this.form.person.city = 'Manila';
-    this.form.person.province = 'Metro Pero Manila';
-    this.form.person.postalCode = '1332';
-    this.form.person.phoneNumber = '09321654987';
+    
   }
 
   // ============================================================
