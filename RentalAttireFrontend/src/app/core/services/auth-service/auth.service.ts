@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AccessTokenKey } from '../../../../environments/access-token-key';
 import { RefreshTokenKey } from '../../../../environments/refresh-token-key';
 import { AuthenticationResult } from '../../../data/models/Results/authentication-result';
@@ -10,7 +11,6 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { CurrentUser } from '../../../../environments/current-user';
 import { UserViewModel } from '../../../data/models/DTOs/Users/user-view-model';
 import { UserDTO } from '../../../data/models/DTOs/Users/user-dto';
-import { identifierName } from '@angular/compiler';
 import { RegisterCustomerCommand } from '../../../data/models/DTOs/Customer/register-customer';
 import { USER_ID } from '../../../../environments/user-id';
 import { jwtDecode } from 'jwt-decode';
@@ -27,6 +27,7 @@ export class AuthService {
   constructor(
     private httpClient: HttpClient,
     private router: Router,
+    private socialAuthService: SocialAuthService,
   ) {}
 
   private baseUrl = `${environment.apiUrl}/Authentication`;
@@ -35,9 +36,19 @@ export class AuthService {
   private refreshTokenKey = `${RefreshTokenKey}`;
   private isLoggingOut = false;
 
-  logout() {
+  async logout() {
     this.isLoggingOut = true;
     this.removeTokens();
+
+    // Clear the Google library's remembered user so the login page
+    // doesn't receive it again and sign the user straight back in.
+    // signOut() throws if no Google user is signed in (password login),
+    // so that case is ignored.
+    try {
+      await this.socialAuthService.signOut();
+    } catch {
+      // not signed in with Google — nothing to clear
+    }
 
     this.router.navigateByUrl('/log-in').then(() => {
       this.isLoggingOut = false;

@@ -126,15 +126,17 @@ export class LogInComponent implements OnInit, OnDestroy {
           this.authService.saveTokens(result.data.accessToken, result.data.refreshToken);
         }
 
-        
-
-        if(!result.data?.isProfileComplete)
+        if(!result.data?.isProfileComplete) {
           this.router.navigateByUrl('/profile-completion');
+          return;
+        }
 
         var rolePosition = this.authService.getCurrentUserRolePosition();   
 
-        if(!rolePosition)
+        if(!rolePosition) {
           this.loginError = 'Invalid role position.';
+          return;
+        }
 
         if(rolePosition == 'Administrator')
           this.router.navigateByUrl('/admin');
