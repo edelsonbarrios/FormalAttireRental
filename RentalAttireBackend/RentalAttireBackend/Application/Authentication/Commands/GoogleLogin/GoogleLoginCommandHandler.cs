@@ -2,6 +2,7 @@
 using Google.Apis.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RentalAttireBackend.Application.Common.Interfaces;
 using RentalAttireBackend.Application.Common.Models;
@@ -22,6 +23,7 @@ namespace RentalAttireBackend.Application.Authentication.Commands.GoogleLogin
         private readonly ICustomerRepository _customerRepo;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IFileUploadService _fileUploadService;
+        private readonly ILogger<GoogleLoginCommandHandler> _logger;
 
         public GoogleLoginCommandHandler(
             ITransactionManager transactionManager,
@@ -32,7 +34,8 @@ namespace RentalAttireBackend.Application.Authentication.Commands.GoogleLogin
             IJwtTokenGenerator tokenGenerator,
             ICustomerRepository customerRepo,
             IPasswordHasher passwordHasher,
-            IFileUploadService fileUploadService
+            IFileUploadService fileUploadService,
+            ILogger<GoogleLoginCommandHandler> logger
             )
         {
             _transactionManager = transactionManager;
@@ -44,6 +47,7 @@ namespace RentalAttireBackend.Application.Authentication.Commands.GoogleLogin
             _customerRepo = customerRepo;
             _passwordHasher = passwordHasher;
             _fileUploadService = fileUploadService;
+            _logger = logger;
         }
         public async Task<Result<AuthenticationResult>> Handle(GoogleLoginCommand command, CancellationToken cancellationToken)
         {
@@ -63,14 +67,21 @@ namespace RentalAttireBackend.Application.Authentication.Commands.GoogleLogin
 
                     payload = await GoogleJsonWebSignature.ValidateAsync(command.IdToken, validationSettings);
 
-                }catch(InvalidJwtException)
+                }
+                catch (InvalidJwtException ex)
                 {
+                    _logger.LogWarning(
+                        ex,
+                        "Google token validation failed. Reason: {Reason}. Configured ClientId: '{ClientId}'",
+                        ex.Message,
+                        _googleAuthSettings.ClientId);
+
                     return Result<AuthenticationResult>.Failure("Invalid google token.");
                 }
 
                 var user = await _userRepo.GetUserByEmailAsync(payload.Email, cancellationToken);
 
-                if(user is not null)
+                if (user is not null)
                 {
                     await _transactionManager.BeginTransactionAsync(cancellationToken);
 
@@ -82,7 +93,7 @@ namespace RentalAttireBackend.Application.Authentication.Commands.GoogleLogin
 
                     var auditTransaction = await _auditService.LoginAuditLogAsync(user, user.Person.FullName, user.Id);
 
-                    if(!auditTransaction)
+                    if (!auditTransaction)
                     {
                         await _transactionManager.RollbackTransactionAsync(cancellationToken);
                         return Result<AuthenticationResult>.Failure("Transaction record could not be audited.");
@@ -108,7 +119,7 @@ namespace RentalAttireBackend.Application.Authentication.Commands.GoogleLogin
                         Email = user.Email,
                         IsProfileComplete = user.Person.IsProfileComplete
                     });
-                } 
+                }
 
                 await _transactionManager.BeginTransactionAsync(cancellationToken);
 
@@ -142,7 +153,7 @@ namespace RentalAttireBackend.Application.Authentication.Commands.GoogleLogin
 
                 var createCustomer = await _customerRepo.CreateCustomerAsync(newCustomer, cancellationToken);
 
-                if(!createCustomer)
+                if (!createCustomer)
                 {
                     await _transactionManager.RollbackTransactionAsync(cancellationToken);
                     return Result<AuthenticationResult>.Failure("Failed to create customer record.");
@@ -156,7 +167,7 @@ namespace RentalAttireBackend.Application.Authentication.Commands.GoogleLogin
 
                 var initializeTokens = await _userRepo.UpdateUserAsync(newUser, cancellationToken);
 
-                if(!initializeTokens)
+                if (!initializeTokens)
                 {
                     await _transactionManager.RollbackTransactionAsync(cancellationToken);
                     return Result<AuthenticationResult>.Failure("Refresh & Access token could not be initialized.");
