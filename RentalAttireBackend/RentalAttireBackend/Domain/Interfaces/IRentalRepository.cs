@@ -47,5 +47,9 @@ namespace RentalAttireBackend.Domain.Interfaces
             int currentPage,
             int itemsPerPage,
             CancellationToken cancellationToken);
+
+        public Task<CustomerStatsDTO> GetCustomerRentalStatsAsync(
+            int customerId,
+            CancellationToken cancellationToken);
     }
 }

@@ -228,5 +228,35 @@ namespace RentalAttireBackend.Infrastructure.Persistence.Repositories
             _context.Rentals.Update(rental);
             return await _context.SaveChangesAsync() > 0;
         }
+
+        private static readonly string[] SpentStatuses =
+            { "confirmed", "ready for pickup", "returned", "overdue" };
+
+        public async Task<CustomerStatsDTO> GetCustomerRentalStatsAsync(
+            int customerId,
+            CancellationToken cancellationToken)
+        {
+            var activeStatuses = AllowedStatusConditions.MyRentalFilters["active"];
+
+            var rentals = _context.Rentals
+                .Where(r => r.IsActive && r.Customer.Id == customerId);
+
+            var totalRentals = await rentals
+                .CountAsync(r => r.Status.ToLower() != "declined", cancellationToken);
+
+            var totalSpent = await rentals
+                .Where(r => SpentStatuses.Contains(r.Status.ToLower()))
+                .SumAsync(r => (int?)r.TotalAmount, cancellationToken) ?? 0;
+
+            var activeRentals = await rentals
+                .CountAsync(r => activeStatuses.Contains(r.Status), cancellationToken);
+
+            return new CustomerStatsDTO
+            {
+                TotalRentals = totalRentals,
+                TotalSpent = totalSpent,
+                ActiveRentals = activeRentals
+            };
+        }
     }
 }

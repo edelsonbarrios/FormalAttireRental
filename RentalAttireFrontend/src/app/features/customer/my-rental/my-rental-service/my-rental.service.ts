@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BaseApiUrl } from '../../../../../environments/base-api-url';
 import { PagedResult } from '../../../../data/models/Results/pagedResult';
 import { RentalDTO } from '../../../../data/models/DTOs/Rentals/rental';
+import { CustomerStats } from '../../../../data/models/DTOs/Rentals/customer-stats';
 import { Result } from '../../../../data/models/Results/result';
 import { extractErrorMessage } from '../../../../data/utils/error-response-util';
 import { filter, firstValueFrom } from 'rxjs';
@@ -40,6 +41,18 @@ export class MyRentalService {
         this.httpClient.get<Result<PagedResult<RentalDTO>>>(`${this.baseUrl}/my-rentals`, { params : params})
       );
       
+      return result;
+    }catch(err : any) {
+      return Result.failure(extractErrorMessage(err.error));
+    }
+  }
+
+  async getCustomerStatsAsync() : Promise<Result<CustomerStats>> {
+    try {
+      const result = await firstValueFrom(
+        this.httpClient.get<Result<CustomerStats>>(`${this.baseUrl}/my-stats`)
+      );
+
       return result;
     }catch(err : any) {
       return Result.failure(extractErrorMessage(err.error));

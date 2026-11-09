@@ -351,6 +351,7 @@ $red-dim:      rgba(192, 57, 43, 0.09);
   &--confirmed { color: $blue;  background: $blue-dim;  border-color: $blue-border; }
   &--ready     { color: $green; background: $green-dim; border-color: $green-border; }
   &--returned  { color: $text-muted; background: $bg; border-color: $border; }
+  &--overdue   { color: $red;   background: $red-dim;   border-color: rgba(192,57,43,0.22); }
 }
 
 

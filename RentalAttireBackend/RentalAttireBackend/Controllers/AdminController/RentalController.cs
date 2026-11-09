@@ -1,15 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using RentalAttireBackend.Application.Common.Extensions;
 using RentalAttireBackend.Application.Rentals.Commands.RentalTransaction;
 using RentalAttireBackend.Application.Rentals.Commands.UpdateRentalStatusCommand;
-using RentalAttireBackend.Application.Rentals.Queries;
 using RentalAttireBackend.Application.Rentals.Queries.CustomerRentals;
 using RentalAttireBackend.Application.Rentals.Queries.FilterRentals;
 using RentalAttireBackend.Application.Rentals.Queries.GetAllRentals;
+using RentalAttireBackend.Application.Rentals.Queries.CustomerStats;
 
 namespace RentalAttireBackend.Controllers.AdminController
 {
@@ -92,6 +90,14 @@ namespace RentalAttireBackend.Controllers.AdminController
                 CurrentPage = currentPage,
                 ItemsPerPage = itemsPerPage
             });
+
+            return result.ToActionResult(this, _httpContextAccessor);
+        }
+
+        [HttpGet("my-stats")]
+        public async Task<IActionResult> GetCustomerStatsAsync()
+        {
+            var result = await _meaditor.Send(new CustomerStatsQuery());
 
             return result.ToActionResult(this, _httpContextAccessor);
         }

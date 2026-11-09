@@ -1,30 +1,19 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-// import { ClotheService } from '../../../features/clothes/clothe-service/clothe.service';
-// import { RentalService } from '../../../features/rentals/rental-service/rental.service';
-// import { UserService } from '../../../core/services/user-service/user.service';
+import { ToastrService } from 'ngx-toastr';
+import { ClotheDTO } from '../../../data/models/DTOs/Clothes/clothes';
+import { RentalDTO } from '../../../data/models/DTOs/Rentals/rental';
+import { ClotheService } from '../../admin/clothes/clothe-service/clothe.service';
+import { CategoryService } from '../../admin/categories/category-service/category.service';
+import { MyRentalService } from '../my-rental/my-rental-service/my-rental.service';
 
-// ── Inline models — replace with real imports once created ───
-export class ClotheSummary {
-  id: number              = 0;
-  clotheCode: string      = '';
-  clotheName: string      = '';
-  categoryName: string    = '';
-  clotheGender: string    = '';
-  size: string            = '';
-  rentalPrice: number     = 0;
-  depositAmount: number   = 0;
-  condition: string       = '';
-  profileImagePath: string = '';
-  availableQuantity: number = 0;
-  stockQuantity: number   = 0;
-}
-
+// ── View models: the shape the template reads ────────────────
+// Real RentalDTO data is mapped into these in toRentalSummary().
 export class RentalSummary {
   id: number           = 0;
   rentalCode: string   = '';
-  status: string       = ''; // 'Pending' | 'Confirmed' | 'Ready for Pickup' | 'Returned'
+  status: string       = '';
   startDate: Date | null = null;
   endDate: Date | null   = null;
   totalAmount: number  = 0;
@@ -56,108 +45,170 @@ export class CustomerDashboardComponent implements OnInit {
   totalSpent        = 0;
   activeRentals     = 0;
 
-  activeOrders: RentalSummary[]    = [];
-  featuredClothes: ClotheSummary[] = [];
-  recentRentals: RentalSummary[]   = [];
+  activeOrders: RentalSummary[] = [];
+  featuredClothes: ClotheDTO[]  = [];
+
+  // ── Display limits ─────────────────────────────────────────
+  private readonly maxActiveOrders = 3;
+  private readonly maxFeaturedClothes = 8;
 
   // ── Filter for featured clothes ────────────────────────────
   activeCategoryFilter = 'All';
-  categoryFilters = ['All', 'Barong', 'Gown', 'Suit', 'Debut', 'Others'];
+  categoryFilters: string[] = ['All'];
+
+  // Canonical lowercase order used for matching, decoupled from
+  // however the backend happens to capitalize the status string.
+  private readonly statusOrder = ['pending', 'confirmed', 'ready for pickup', 'returned'];
+
+  constructor(
+    private myRentalService: MyRentalService,
+    private clotheService: ClotheService,
+    private categoryService: CategoryService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboard();
   }
 
   loadDashboard(): void {
+    this.loadStats();
     this.loadActiveOrders();
+    this.loadCategories();
     this.loadFeaturedClothes();
-    // TODO: load customer stats from UserService
   }
 
+  // ============================================================
+  // Stats + customer name
+  // ============================================================
+  loadStats(): void {
+    this.myRentalService.getCustomerStatsAsync()
+      .then(res => {
+        if (!res.isSuccess || !res.data) {
+          this.toastr.error(res.errorMessage ?? 'Failed to load your rental stats.');
+          return;
+        }
+
+        this.customerName  = this.toTitleCase(res.data.customerName) || 'there';
+        this.totalRentals  = res.data.totalRentals;
+        this.totalSpent    = res.data.totalSpent;
+        this.activeRentals = res.data.activeRentals;
+      })
+      .catch(() => this.toastr.error('Failed to load your rental stats.'));
+  }
+
+  // ============================================================
+  // Active orders
+  // ============================================================
   loadActiveOrders(): void {
     this.isLoadingRentals = true;
 
-    // TODO: wire to RentalService
-    // this.rentalService.getMyActiveRentalsAsync()
-    //   .then(res => {
-    //     if (!res.isSuccess) return;
-    //     this.activeOrders = res.data ?? [];
-    //   })
-    //   .catch(err => console.error(err))
-    //   .finally(() => this.isLoadingRentals = false);
+    this.myRentalService.getCustomerRentalsAsync('', 'active', 1, this.maxActiveOrders)
+      .then(res => {
+        if (!res.isSuccess) {
+          this.activeOrders = [];
 
-    // Mock data
-    this.activeOrders = [
-      {
-        id: 1, rentalCode: 'RNT-2025-001', status: 'Confirmed',
-        startDate: new Date('2025-05-10'), endDate: new Date('2025-05-13'),
-        totalAmount: 3500,
-        items: [
-          { clotheName: 'Ivory Barong Tagalog', clotheCode: 'CLT-001', rentalPrice: 1500 },
-          { clotheName: 'Black Slacks',          clotheCode: 'CLT-042', rentalPrice: 500  },
-        ]
-      },
-      {
-        id: 2, rentalCode: 'RNT-2025-002', status: 'Ready for Pickup',
-        startDate: new Date('2025-05-15'), endDate: new Date('2025-05-18'),
-        totalAmount: 4800,
-        items: [
-          { clotheName: 'Royal Blue Gown', clotheCode: 'CLT-017', rentalPrice: 2500 },
-        ]
-      },
-    ];
-    this.activeRentals = this.activeOrders.length;
-    this.isLoadingRentals = false;
+          // "No rentals found" is a normal state on the dashboard, not an error.
+          if (!this.isNoRentalsMessage(res.errorMessage)) {
+            this.toastr.error(res.errorMessage ?? 'Failed to load your active orders.');
+          }
+          return;
+        }
+
+        this.activeOrders = (res.data?.items ?? []).map(r => this.toRentalSummary(r));
+      })
+      .catch(() => {
+        this.activeOrders = [];
+        this.toastr.error('Failed to load your active orders.');
+      })
+      .finally(() => this.isLoadingRentals = false);
+  }
+
+  private toRentalSummary(rental: RentalDTO): RentalSummary {
+    return {
+      id: rental.id,
+      rentalCode: rental.rentalCode,
+      status: rental.status,
+      startDate: rental.pickupDate ? new Date(rental.pickupDate) : null,
+      endDate: rental.returnDate ? new Date(rental.returnDate) : null,
+      totalAmount: rental.totalAmount,
+      items: (rental.rentalItems ?? []).map(item => ({
+        clotheName: item.clothe?.clotheName ?? '',
+        clotheCode: item.clothe?.clotheCode ?? '',
+        // Line total (price x quantity), so the item prices add up to the order amount
+        rentalPrice: item.totalAmount,
+      })),
+    };
+  }
+
+  private isNoRentalsMessage(message?: string): boolean {
+    return /no rentals/i.test(message ?? '');
+  }
+
+  // ============================================================
+  // Categories + featured clothes
+  // ============================================================
+  loadCategories(): void {
+    this.categoryService.getAllCategories()
+      .then(res => {
+        const names = (res.data ?? []).map(c => c.categoryName);
+        this.categoryFilters = ['All', ...names];
+      })
+      .catch(() => {
+        // Keep just the "All" pill if categories can't load
+      });
   }
 
   loadFeaturedClothes(): void {
     this.isLoadingClothes = true;
 
-    // TODO: wire to ClotheService
-    // this.clotheService.filterClotheAsync('', this.activeCategoryFilter === 'All' ? '' : this.activeCategoryFilter, 1, 8)
-    //   .then(res => {
-    //     if (!res.isSuccess) return;
-    //     this.featuredClothes = res.data?.items ?? [];
-    //   })
-    //   .catch(err => console.error(err))
-    //   .finally(() => this.isLoadingClothes = false);
+    const category = this.activeCategoryFilter === 'All' ? '' : this.activeCategoryFilter;
 
-    // Mock data
-    this.featuredClothes = [
-      { id: 1, clotheCode: 'CLT-001', clotheName: 'Ivory Barong Tagalog',  categoryName: 'Barong', clotheGender: 'Male',   size: 'M',  rentalPrice: 1500, depositAmount: 1500, condition: 'New',  profileImagePath: '', availableQuantity: 5, stockQuantity: 8 },
-      { id: 2, clotheCode: 'CLT-002', clotheName: 'Royal Blue Gown',        categoryName: 'Gown',   clotheGender: 'Female', size: 'S',  rentalPrice: 2500, depositAmount: 2500, condition: 'Good', profileImagePath: '', availableQuantity: 2, stockQuantity: 3 },
-      { id: 3, clotheCode: 'CLT-003', clotheName: 'Classic Black Suit',     categoryName: 'Suit',   clotheGender: 'Male',   size: 'L',  rentalPrice: 2000, depositAmount: 2000, condition: 'New',  profileImagePath: '', availableQuantity: 4, stockQuantity: 5 },
-      { id: 4, clotheCode: 'CLT-004', clotheName: 'Blush Pink Debut Gown',  categoryName: 'Debut',  clotheGender: 'Female', size: 'M',  rentalPrice: 3500, depositAmount: 3500, condition: 'New',  profileImagePath: '', availableQuantity: 1, stockQuantity: 2 },
-      { id: 5, clotheCode: 'CLT-005', clotheName: 'Navy Barong Tagalog',    categoryName: 'Barong', clotheGender: 'Male',   size: 'XL', rentalPrice: 1200, depositAmount: 1200, condition: 'Good', profileImagePath: '', availableQuantity: 3, stockQuantity: 4 },
-      { id: 6, clotheCode: 'CLT-006', clotheName: 'Champagne Evening Gown', categoryName: 'Gown',   clotheGender: 'Female', size: 'M',  rentalPrice: 2800, depositAmount: 2800, condition: 'New',  profileImagePath: '', availableQuantity: 2, stockQuantity: 3 },
-    ];
-    this.isLoadingClothes = false;
+    this.clotheService.filterClothesAsync('', '', '', category, 1, this.maxFeaturedClothes)
+      .then(res => {
+        this.featuredClothes = res.data?.items ?? [];
+      })
+      .catch(() => {
+        this.featuredClothes = [];
+        this.toastr.error('Failed to load the catalogue.');
+      })
+      .finally(() => this.isLoadingClothes = false);
   }
 
   setFilter(filter: string): void {
+    if (filter === this.activeCategoryFilter) return;
     this.activeCategoryFilter = filter;
     this.loadFeaturedClothes();
   }
 
   // ── Helpers ────────────────────────────────────────────────
+  private normalizeStatus(status: string): string {
+    return (status ?? '').trim().toLowerCase();
+  }
+
+  // Returns the modifier class defined in the SCSS (.status-pill--*)
   getStatusClass(status: string): string {
-    const map: Record<string, string> = {
-      'Pending':          'status--pending',
-      'Confirmed':        'status--confirmed',
-      'Ready for Pickup': 'status--ready',
-      'Returned':         'status--returned',
-    };
-    return map[status] ?? '';
+    switch (this.normalizeStatus(status)) {
+      case 'pending':          return 'status-pill--pending';
+      case 'confirmed':        return 'status-pill--confirmed';
+      case 'ready for pickup': return 'status-pill--ready';
+      case 'returned':         return 'status-pill--returned';
+      case 'overdue':          return 'status-pill--overdue';
+      default:                 return '';
+    }
   }
 
   getStatusStep(status: string): number {
-    const steps: Record<string, number> = {
-      'Pending': 1, 'Confirmed': 2, 'Ready for Pickup': 3, 'Returned': 4,
-    };
-    return steps[status] ?? 1;
+    const normalized = this.normalizeStatus(status);
+
+    // Overdue = items are out with the customer, so the tracker sits on the pickup step
+    if (normalized === 'overdue') return 3;
+
+    const idx = this.statusOrder.indexOf(normalized);
+    return idx === -1 ? 1 : idx + 1;
   }
 
-  getStockStatus(clothe: ClotheSummary): 'available' | 'low' | 'out' {
+  getStockStatus(clothe: ClotheDTO): 'available' | 'low' | 'out' {
     if (clothe.availableQuantity === 0) return 'out';
     if (clothe.availableQuantity <= clothe.stockQuantity * 0.2) return 'low';
     return 'available';
@@ -167,8 +218,16 @@ export class CustomerDashboardComponent implements OnInit {
   onImgError(id: number): void { this.imgErrors.add(id); }
   hasImgError(id: number): boolean { return this.imgErrors.has(id); }
 
-  get filteredClothes(): ClotheSummary[] {
-    if (this.activeCategoryFilter === 'All') return this.featuredClothes;
-    return this.featuredClothes.filter(c => c.categoryName === this.activeCategoryFilter);
+  // The server already filters by category, so this just returns the list.
+  get filteredClothes(): ClotheDTO[] {
+    return this.featuredClothes;
+  }
+
+  private toTitleCase(value: string): string {
+    const trimmed = (value ?? '').trim();
+    if (!trimmed) return '';
+    return trimmed
+      .toLowerCase()
+      .replace(/\b\w/g, ch => ch.toUpperCase());
   }
 }
