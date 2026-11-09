@@ -58,7 +58,6 @@ export class EmployeesComponent implements OnInit {
   ngOnInit(): void {
     this.getCurrentUser();
     this.getAllEmployees();
-    this.toastr.success('My baby ica the beatifulest, prettiest, gorgeousest, omisimizest');
   }
 
   searchEmployees(): void {

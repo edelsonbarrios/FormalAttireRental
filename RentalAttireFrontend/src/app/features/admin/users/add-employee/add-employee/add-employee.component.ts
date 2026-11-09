@@ -64,25 +64,25 @@ export class AddEmployeeComponent {
 
   form: EmployeeDTO = {
     id: 0,
-    employeeCode: 'EMP-SAMPLE',
-    department: 'Sample Departmen',
-    salary: 1, // null so the input starts empty, not "0"
-    rolePosition: 'Cashier',
+    employeeCode: '',
+    department: '',
+    salary: 0, // null so the input starts empty, not "0"
+    rolePosition: '',
     person: {
       id: 0,
-      lastName: 'samp',
-      firstName: 'samp',
-      middleName: 'samp',
-      age: 18, // null so the input starts empty, not "0"
+      lastName: '',
+      firstName: '',
+      middleName: '',
+      age: 0, // null so the input starts empty, not "0"
       gender: 'Male',
-      maritalStatus: 'Single',
-      phoneNumber: '09111111111',
-      street: 'sample',
-      barangay: 'sample',
-      city: 'sample',
-      province: 'sample',
-      postalCode: 'sample',
-      profileImagePath: 'sample',
+      maritalStatus: '',
+      phoneNumber: '',
+      street: '',
+      barangay: '',
+      city: '',
+      province: '',
+      postalCode: '',
+      profileImagePath: '',
       fullName: '',
     },
   };

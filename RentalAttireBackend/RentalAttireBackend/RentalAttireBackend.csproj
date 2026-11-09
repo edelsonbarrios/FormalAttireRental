@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Application\Users\Commands\**" />
+    <Content Remove="Application\Users\Commands\**" />
+    <EmbeddedResource Remove="Application\Users\Commands\**" />
+    <None Remove="Application\Users\Commands\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="appsettings.json" />
   </ItemGroup>
 
@@ -39,7 +46,6 @@
   <ItemGroup>
     <Folder Include="Application\Customers\Commands\UpdateCustomer\" />
     <Folder Include="Application\PurchaseOrders\Commands\" />
-    <Folder Include="Application\Users\Commands\" />
     <Folder Include="Controllers\CustomerController\" />
     <Folder Include="Controllers\CashierController\" />
   </ItemGroup>
